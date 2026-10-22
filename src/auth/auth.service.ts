@@ -61,7 +61,7 @@ export class AuthService {
   async signup(dto: SignUpDto) {
     if (await this.userModel.exists({ email: dto.email })) throw new ConflictException('An account already exists for this email');
     const referredBy = await this.handleReferrer(dto.referral_code);
-    const user = await this.userModel.create({ email: dto.email, password: await HashData(dto.password), firstName: dto.firstName || '', lastName: dto.lastName || '', authType: AuthProvider.LOCAL });
+    const user = await this.userModel.create({ email: dto.email, password: await HashData(dto.password), firstName: dto.firstName || '', lastName: dto.lastName || '', authType: AuthProvider.LOCAL, phone: dto.phone, referredBy });
     await this.crewService.createCrew(user);
     if (dto.referral_code) {
       await this.crewService.updateCrew(dto.referral_code, user);

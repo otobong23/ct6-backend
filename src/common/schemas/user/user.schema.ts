@@ -113,6 +113,11 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 
+UserSchema.pre('validate', function () {
+  this.referral_code = this.userID;
+});
+
+
 UserSchema.statics.search = function (keyword: string) {
   const pattern = new RegExp(keyword, 'i'); // case-insensitive
 
