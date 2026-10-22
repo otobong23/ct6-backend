@@ -9,8 +9,8 @@ import { TransactionService } from './transaction.service';
 import { UserOrder, UserOrderSchema } from './schemas/userOrder.schema';
 import { UserOrdersService } from './UserOrders.service';
 import { Earner, EarnerSchema } from './schemas/earner.schema';
-import { CopyTradePurchase, CopyTradePurchaseSchema } from '@/copy-trading/schemas/copy-trade-purchase.schema';
-import { CrewModule } from '@/crew/crew.module';
+import { CopyTradePurchase, CopyTradePurchaseSchema } from 'src/copy-trading/schemas/copy-trade-purchase.schema';
+import { CrewModule } from 'src/crew/crew.module';
 
 @Module({
   imports: [
