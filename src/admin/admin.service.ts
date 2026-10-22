@@ -2,7 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { User, UserDocument, UserModel } from '../common/schemas/user/user.schema';
+import { User, UserDocument } from '../common/schemas/user/user.schema';
+import type { UserModel } from '../common/schemas/user/user.schema';
 import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema';
 import { UpdateTransactionStatusDto } from './dto/update-transaction-status.dto';
 import { UpdateUserAdministrationDto } from './dto/update-user-administration.dto';
@@ -15,7 +16,8 @@ import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dt
 import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto';
 import { CrewService } from '@/crew/crew.service';
 import { CrewExtraService } from '@/crew/crewExtra.service';
-import { Crew, CrewDocument, CrewModel } from '@/crew/schema/userCrew.schema';
+import { Crew, CrewDocument } from '@/crew/schema/userCrew.schema';
+import type { CrewModel } from '@/crew/schema/userCrew.schema';
 
 @Injectable()
 export class AdminService {
