@@ -1,8 +1,8 @@
-import { TransactionStatus } from '@/transaction/enum/transaction-status.enum';
+import { TransactionStatus } from '../../../transaction/enum/transaction-status.enum.js';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
 import { nanoid } from 'nanoid';
-import { AuthProvider } from 'src/user/enum/auth-provider.enum';
+import { AuthProvider } from '../../../user/enum/auth-provider.enum.js';
 
 
 @Schema({ timestamps: true, id: true })

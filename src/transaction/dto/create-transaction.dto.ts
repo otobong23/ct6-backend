@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { TransactionType } from '../enum/transaction-type.enum';
+import { TransactionType } from '../enum/transaction-type.enum.js';
 
 export class CreateTransactionDto {
   @IsEnum(TransactionType)

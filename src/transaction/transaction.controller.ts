@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { CurrentUser } from 'src/common/decorator/current.logged.user';
-import { JwtAuthGuard } from 'src/common/strategies/jwt-auth.guard';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { TransactionService } from './transaction.service';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { CurrentUser } from '../common/decorator/current.logged.user.js';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
+import { CreateTransactionDto } from './dto/create-transaction.dto.js';
+import { TransactionService } from './transaction.service.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @Controller('transactions')
 @UseGuards(JwtAuthGuard)

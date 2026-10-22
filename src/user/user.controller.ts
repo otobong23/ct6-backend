@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Patch, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/common/strategies/jwt-auth.guard';
-import { CurrentUser } from 'src/common/decorator/current.logged.user';
-import { Serialize } from 'src/common/interceptor/custom.interceptor';
-import { UpdateUserDTO } from './dto/update.user.dto';
-import { UserDto } from './dto/user.dto';
-import { UserService } from './user.service';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
+import { CurrentUser } from '../common/decorator/current.logged.user.js';
+import { Serialize } from '../common/interceptor/custom.interceptor.js';
+import { UpdateUserDTO } from './dto/update.user.dto.js';
+import { UserDto } from './dto/user.dto.js';
+import { UserService } from './user.service.js';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)

@@ -1,23 +1,23 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { User, UserDocument } from '../common/schemas/user/user.schema';
-import type { UserModel } from '../common/schemas/user/user.schema';
-import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema';
-import { UpdateTransactionStatusDto } from './dto/update-transaction-status.dto';
-import { UpdateUserAdministrationDto } from './dto/update-user-administration.dto';
-import { TransactionMailService } from 'src/transaction/transaction-mail.service';
-import { TransactionType } from 'src/transaction/enum/transaction-type.enum';
-import { CopyTradePurchase, CopyTradePurchaseDocument } from '../copy-trading/schemas/copy-trade-purchase.schema';
-import { AdminCopyTradePurchaseQueryDto, AdminStockPurchaseQueryDto } from './dto/admin-purchase-query.dto';
-import { CopyTrading, CopyTradingDocument } from '../copy-trading/schemas/copy-trading.schema';
-import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto';
-import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto';
-import { CrewService } from '@/crew/crew.service';
-import { CrewExtraService } from '@/crew/crewExtra.service';
-import { Crew, CrewDocument } from '@/crew/schema/userCrew.schema';
-import type { CrewModel } from '@/crew/schema/userCrew.schema';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { User, UserDocument } from '../common/schemas/user/user.schema.js';
+import type { UserModel } from '../common/schemas/user/user.schema.js';
+import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema.js';
+import { UpdateTransactionStatusDto } from './dto/update-transaction-status.dto.js';
+import { UpdateUserAdministrationDto } from './dto/update-user-administration.dto.js';
+import { TransactionMailService } from '../transaction/transaction-mail.service.js';
+import { TransactionType } from '../transaction/enum/transaction-type.enum.js';
+import { CopyTradePurchase, CopyTradePurchaseDocument } from '../copy-trading/schemas/copy-trade-purchase.schema.js';
+import { AdminCopyTradePurchaseQueryDto, AdminStockPurchaseQueryDto } from './dto/admin-purchase-query.dto.js';
+import { CopyTrading, CopyTradingDocument } from '../copy-trading/schemas/copy-trading.schema.js';
+import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto.js';
+import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto.js';
+import { CrewService } from '../crew/crew.service.js';
+import { CrewExtraService } from '../crew/crewExtra.service.js';
+import { Crew, CrewDocument } from '../crew/schema/userCrew.schema.js';
+import type { CrewModel } from '../crew/schema/userCrew.schema.js';
 
 @Injectable()
 export class AdminService {

@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { User, UserDocument } from 'src/common/schemas/user/user.schema';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { TransactionStatus } from './enum/transaction-status.enum';
-import { TransactionType } from './enum/transaction-type.enum';
-import { Transaction, TransactionDocument } from './schemas/transaction.schema';
-import { TransactionMailService } from './transaction-mail.service';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { Earner, EarnerDocument } from './schemas/earner.schema';
-import { CopyTradePurchase, CopyTradePurchaseDocument } from '@/copy-trading/schemas/copy-trade-purchase.schema';
+import { User, UserDocument } from '../common/schemas/user/user.schema.js';
+import { CreateTransactionDto } from './dto/create-transaction.dto.js';
+import { TransactionStatus } from './enum/transaction-status.enum.js';
+import { TransactionType } from './enum/transaction-type.enum.js';
+import { Transaction, TransactionDocument } from './schemas/transaction.schema.js';
+import { TransactionMailService } from './transaction-mail.service.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { Earner, EarnerDocument } from './schemas/earner.schema.js';
+import { CopyTradePurchase, CopyTradePurchaseDocument } from '../copy-trading/schemas/copy-trade-purchase.schema.js';
 
 @Injectable()
 export class TransactionService {

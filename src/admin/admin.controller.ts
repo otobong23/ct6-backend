@@ -1,15 +1,15 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { AdminGuard } from '../common/guards/admin.guard';
-import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard';
-import { LoginDto } from '../auth/dto/auth.dto';
-import { AuthService } from '../auth/auth.service';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { UpdateTransactionStatusDto } from './dto/update-transaction-status.dto';
-import { UpdateUserAdministrationDto } from './dto/update-user-administration.dto';
-import { AdminService } from './admin.service';
-import { AdminCopyTradePurchaseQueryDto, AdminUserParamsDto } from './dto/admin-purchase-query.dto';
-import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto';
-import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto';
+import { AdminGuard } from '../common/guards/admin.guard.js';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
+import { LoginDto } from '../auth/dto/auth.dto.js';
+import { AuthService } from '../auth/auth.service.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { UpdateTransactionStatusDto } from './dto/update-transaction-status.dto.js';
+import { UpdateUserAdministrationDto } from './dto/update-user-administration.dto.js';
+import { AdminService } from './admin.service.js';
+import { AdminCopyTradePurchaseQueryDto, AdminUserParamsDto } from './dto/admin-purchase-query.dto.js';
+import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto.js';
+import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto.js';
 
 @Controller('admin')
 export class AdminController {

@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { nanoid } from 'nanoid';
-import { TransactionStatus } from '../enum/transaction-status.enum';
-import { TransactionType } from '../enum/transaction-type.enum';
+import { TransactionStatus } from '../enum/transaction-status.enum.js';
+import { TransactionType } from '../enum/transaction-type.enum.js';
 
 @Schema({ timestamps: true })
 export class Transaction {

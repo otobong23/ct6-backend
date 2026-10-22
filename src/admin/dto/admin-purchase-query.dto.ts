@@ -1,5 +1,5 @@
 import { IsEnum, IsMongoId, IsOptional } from 'class-validator';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto.js';
 
 export enum StockPurchaseStatus {
   OPEN = 'open',

@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-import { CrewService } from './crew.service';
-import { JwtAuthGuard } from 'src/common/strategies/jwt-auth.guard';
+import { CrewService } from './crew.service.js';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
 
 @UseGuards(JwtAuthGuard)
 @Controller('crew')

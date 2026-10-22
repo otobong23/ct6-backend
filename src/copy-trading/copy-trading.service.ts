@@ -1,16 +1,16 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model, Types } from 'mongoose';
-import { User, UserDocument } from '../common/schemas/user/user.schema';
-import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema';
-import { TransactionStatus } from '../transaction/enum/transaction-status.enum';
-import { TransactionType } from '../transaction/enum/transaction-type.enum';
-import { BuyCopyTradingDto } from './dto/buy-copy-trading.dto';
-import { LiquidateCopyTradingDto } from './dto/liquidate-copy-trading.dto';
-import { CreateCopyTradingDto } from './dto/create-copy-trading.dto';
-import { UpdateCopyTradingDto } from './dto/update-copy-trading.dto';
-import { CopyTradePurchase, CopyTradePurchaseDocument } from './schemas/copy-trade-purchase.schema';
-import { CopyTrading, CopyTradingDocument } from './schemas/copy-trading.schema';
+import mongoose, { Model, Types } from 'mongoose';
+import { User, UserDocument } from '../common/schemas/user/user.schema.js';
+import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema.js';
+import { TransactionStatus } from '../transaction/enum/transaction-status.enum.js';
+import { TransactionType } from '../transaction/enum/transaction-type.enum.js';
+import { BuyCopyTradingDto } from './dto/buy-copy-trading.dto.js';
+import { LiquidateCopyTradingDto } from './dto/liquidate-copy-trading.dto.js';
+import { CreateCopyTradingDto } from './dto/create-copy-trading.dto.js';
+import { UpdateCopyTradingDto } from './dto/update-copy-trading.dto.js';
+import { CopyTradePurchase, CopyTradePurchaseDocument } from './schemas/copy-trade-purchase.schema.js';
+import { CopyTrading, CopyTradingDocument } from './schemas/copy-trading.schema.js';
 
 @Injectable()
 export class CopyTradingService {
@@ -19,7 +19,7 @@ export class CopyTradingService {
     @InjectModel(CopyTradePurchase.name) private readonly purchaseModel: Model<CopyTradePurchaseDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
-    @InjectConnection() private readonly connection: Connection,
+    @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
 
   findAll() { return this.copyTradingModel.find().sort({ createdAt: -1 }); }

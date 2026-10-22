@@ -1,8 +1,8 @@
  import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { EmailVerificationDto, ForgotPasswordDto, LoginDto, ProviderSignInDto, RefreshTokenDto, ResetPasswordDto, SignUpDto, VerifyEmailCodeDto } from './dto/auth.dto';
-import { JwtAuthGuard } from 'src/common/strategies/jwt-auth.guard';
-import { CurrentUser } from 'src/common/decorator/current.logged.user';
+import { AuthService } from './auth.service.js';
+import { EmailVerificationDto, ForgotPasswordDto, LoginDto, ProviderSignInDto, RefreshTokenDto, ResetPasswordDto, SignUpDto, VerifyEmailCodeDto } from './dto/auth.dto.js';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
+import { CurrentUser } from '../common/decorator/current.logged.user.js';
 
 @Controller('auth')
 export class AuthController {

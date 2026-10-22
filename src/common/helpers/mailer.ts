@@ -2,10 +2,10 @@ import * as nodemailer from 'nodemailer'
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { config } from 'dotenv'
-import EmailTemplate from '../mail/mail';
-import TransactionMail from '../mail/transactionmail';
-import HelpMessageMail from '../mail/helpMessage';
-import TransactionStatusEmail from '../mail/TransactionStatusEmail';
+import EmailTemplate from '../mail/mail.js';
+import TransactionMail from '../mail/transactionmail.js';
+import HelpMessageMail from '../mail/helpMessage.js';
+import TransactionStatusEmail from '../mail/TransactionStatusEmail.js';
 config()
 
 

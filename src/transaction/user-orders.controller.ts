@@ -1,9 +1,9 @@
 import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
-import { CurrentUser } from 'src/common/decorator/current.logged.user';
-import { JwtAuthGuard } from 'src/common/strategies/jwt-auth.guard';
-import { CreateUserOrderDto } from './dto/create-user-order.dto';
-import { WithdrawDto } from './dto/create-withdraw-order.dto';
-import { UserOrdersService } from './UserOrders.service';
+import { CurrentUser } from '../common/decorator/current.logged.user.js';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
+import { CreateUserOrderDto } from './dto/create-user-order.dto.js';
+import { WithdrawDto } from './dto/create-withdraw-order.dto.js';
+import { UserOrdersService } from './UserOrders.service.js';
 
 @Controller('transactions/orders')
 @UseGuards(JwtAuthGuard)

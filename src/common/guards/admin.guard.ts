@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../schemas/user/user.schema';
+import { User, UserDocument } from '../schemas/user/user.schema.js';
 
 @Injectable()
 export class AdminGuard implements CanActivate {

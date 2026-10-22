@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
-import { User, UserDocument } from 'src/common/schemas/user/user.schema';
-import { Model, Connection, ClientSession } from 'mongoose';
+import { User, UserDocument } from '../common/schemas/user/user.schema.js';
+import mongoose, { Model, ClientSession } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { Crew, CrewDocument, CrewMember } from './schema/userCrew.schema';
-import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema';
-import { CrewService } from './crew.service';
+import { Crew, CrewDocument, CrewMember } from './schema/userCrew.schema.js';
+import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema.js';
+import { CrewService } from './crew.service.js';
 
 
 @Injectable()
@@ -14,7 +14,7 @@ export class CrewExtraService {
       @InjectModel(User.name) private userModel: Model<UserDocument>,
       @InjectModel(Transaction.name) private transactionModel: Model<TransactionDocument>,
       @InjectModel(Crew.name) private crewModel: Model<CrewDocument>,
-      @InjectConnection() private readonly db: Connection,
+      @InjectConnection() private readonly db: mongoose.Connection,
       private readonly crewService: CrewService,
       private readonly jwtService: JwtService
    ) { }

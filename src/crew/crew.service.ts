@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
-import { User, UserDocument } from 'src/common/schemas/user/user.schema';
-import { Model, Connection, Types } from 'mongoose';
+import { User, UserDocument } from '../common/schemas/user/user.schema.js';
+import mongoose, { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { Crew, CrewDocument, CrewMember } from './schema/userCrew.schema';
-import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema';
-import { CopyTradePurchase, CopyTradePurchaseDocument } from '@/copy-trading/schemas/copy-trade-purchase.schema';
+import { Crew, CrewDocument, CrewMember } from './schema/userCrew.schema.js';
+import { Transaction, TransactionDocument } from '../transaction/schemas/transaction.schema.js';
+import { CopyTradePurchase, CopyTradePurchaseDocument } from '../copy-trading/schemas/copy-trade-purchase.schema.js';
 
 @Injectable()
 export class CrewService {
@@ -14,7 +14,7 @@ export class CrewService {
     @InjectModel(Transaction.name) private transactionModel: Model<TransactionDocument>,
     @InjectModel(Crew.name) private crewModel: Model<CrewDocument>,
     @InjectModel(CopyTradePurchase.name) private copyTradePurchaseModel: Model<CopyTradePurchaseDocument>,
-    @InjectConnection() private readonly db: Connection,
+    @InjectConnection() private readonly db: mongoose.Connection,
   ) { }
 
   private async findReferrer(referral_code: string) {

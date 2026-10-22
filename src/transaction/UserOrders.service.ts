@@ -1,14 +1,14 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { UserOrder, UserOrderDocument } from "./schemas/userOrder.schema";
+import { UserOrder, UserOrderDocument } from "./schemas/userOrder.schema.js";
 import { Model } from "mongoose";
-import { User, UserDocument } from "@/common/schemas/user/user.schema";
-import { Transaction, TransactionDocument } from "./schemas/transaction.schema";
-import { VARIABLES } from "@/common/constant/variables";
-import { WithdrawDto } from "./dto/create-withdraw-order.dto";
-import { TransactionStatus } from "./enum/transaction-status.enum";
-import { TransactionType } from "./enum/transaction-type.enum";
-import { sendMail } from "@/common/helpers/mailer";
+import { User, UserDocument } from "../common/schemas/user/user.schema.js";
+import { Transaction, TransactionDocument } from "./schemas/transaction.schema.js";
+import { VARIABLES } from "../common/constant/variables.js";
+import { WithdrawDto } from "./dto/create-withdraw-order.dto.js";
+import { TransactionStatus } from "./enum/transaction-status.enum.js";
+import { TransactionType } from "./enum/transaction-type.enum.js";
+import { sendMail } from "../common/helpers/mailer.js";
 
 const EXPIRY_MINUTES = 30;
 const to = process.env.EMAIL_USER!

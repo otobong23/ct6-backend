@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AdminGuard } from '../common/guards/admin.guard';
-import { User, UserSchema } from '../common/schemas/user/user.schema';
-import { Transaction, TransactionSchema } from '../transaction/schemas/transaction.schema';
-import { CopyTradingController } from './copy-trading.controller';
-import { CopyTradingService } from './copy-trading.service';
-import { CopyTradePurchase, CopyTradePurchaseSchema } from './schemas/copy-trade-purchase.schema';
-import { CopyTrading, CopyTradingSchema } from './schemas/copy-trading.schema';
+import { AdminGuard } from '../common/guards/admin.guard.js';
+import { User, UserSchema } from '../common/schemas/user/user.schema.js';
+import { Transaction, TransactionSchema } from '../transaction/schemas/transaction.schema.js';
+import { CopyTradingController } from './copy-trading.controller.js';
+import { CopyTradingService } from './copy-trading.service.js';
+import { CopyTradePurchase, CopyTradePurchaseSchema } from './schemas/copy-trade-purchase.schema.js';
+import { CopyTrading, CopyTradingSchema } from './schemas/copy-trading.schema.js';
 
 @Module({ imports: [MongooseModule.forFeature([{ name: CopyTrading.name, schema: CopyTradingSchema }, { name: CopyTradePurchase.name, schema: CopyTradePurchaseSchema }, { name: User.name, schema: UserSchema }, { name: Transaction.name, schema: TransactionSchema }])], controllers: [CopyTradingController], providers: [CopyTradingService, AdminGuard], exports: [CopyTradingService] })
 export class CopyTradingModule {}

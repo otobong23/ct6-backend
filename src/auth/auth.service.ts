@@ -1,16 +1,16 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+﻿import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { OAuth2Client } from 'google-auth-library';
 import { Model } from 'mongoose';
 import * as crypto from 'crypto';
-const nodemailer = require('nodemailer');
-import { User, UserDocument } from 'src/common/schemas/user/user.schema';
-import { comparedHashed, HashData } from 'src/common/hashed/hashed.data';
-import { AuthProvider } from 'src/user/enum/auth-provider.enum';
-import { EmailVerificationDto, ForgotPasswordDto, LoginDto, ProviderSignInDto, RefreshTokenDto, ResetPasswordDto, SignUpDto, VerifyEmailCodeDto } from './dto/auth.dto';
-import { CrewService } from '@/crew/crew.service';
+import nodemailer from 'nodemailer';
+import { User, UserDocument } from '../common/schemas/user/user.schema.js';
+import { comparedHashed, HashData } from '../common/hashed/hashed.data.js';
+import { AuthProvider } from '../user/enum/auth-provider.enum.js';
+import { EmailVerificationDto, ForgotPasswordDto, LoginDto, ProviderSignInDto, RefreshTokenDto, ResetPasswordDto, SignUpDto, VerifyEmailCodeDto } from './dto/auth.dto.js';
+import { CrewService } from '../crew/crew.service.js';
 
 type AppleClaims = { iss?: string; aud?: string | string[]; exp?: number; sub?: string; email?: string };
 
@@ -236,3 +236,4 @@ export class AuthService {
     return claims;
   }
 }
+

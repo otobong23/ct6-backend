@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { RiskLevel } from '../dto/create-copy-trading.dto';
+import { RiskLevel } from '../dto/create-copy-trading.dto.js';
 
 @Schema({ timestamps: true })
 export class CopyTradePurchase {

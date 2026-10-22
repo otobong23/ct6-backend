@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+﻿import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TransactionDocument } from './schemas/transaction.schema';
+import { TransactionDocument } from './schemas/transaction.schema.js';
 
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 /**
  * Notification boundary for transaction workflows. AdminService should call
@@ -59,3 +59,4 @@ export class TransactionMailService {
     );
   }
 }
+

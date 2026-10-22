@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { CurrentUser } from '../common/decorator/current.logged.user';
-import { AdminGuard } from '../common/guards/admin.guard';
-import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard';
-import { LiquidateCopyTradingDto } from './dto/liquidate-copy-trading.dto';
-import { CreateCopyTradingDto } from './dto/create-copy-trading.dto';
-import { UpdateCopyTradingDto } from './dto/update-copy-trading.dto';
-import { CopyTradingService } from './copy-trading.service';
-import { BuyCopyTradingDto } from './dto/buy-copy-trading.dto';
+import { CurrentUser } from '../common/decorator/current.logged.user.js';
+import { AdminGuard } from '../common/guards/admin.guard.js';
+import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
+import { LiquidateCopyTradingDto } from './dto/liquidate-copy-trading.dto.js';
+import { CreateCopyTradingDto } from './dto/create-copy-trading.dto.js';
+import { UpdateCopyTradingDto } from './dto/update-copy-trading.dto.js';
+import { CopyTradingService } from './copy-trading.service.js';
+import { BuyCopyTradingDto } from './dto/buy-copy-trading.dto.js';
 
 @Controller('copy-trading')
 export class CopyTradingController {

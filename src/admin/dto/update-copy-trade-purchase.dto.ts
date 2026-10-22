@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNumber, IsOptional, IsString, Matches, Max, Min } from 'class-validator';
-import { RiskLevel } from '../../copy-trading/dto/create-copy-trading.dto';
+import { RiskLevel } from '../../copy-trading/dto/create-copy-trading.dto.js';
 
 export enum CopyTradePurchaseStatus { ACTIVE = 'active', LIQUIDATED = 'liquidated' }
 

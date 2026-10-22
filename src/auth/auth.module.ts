@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service.js';
+import { AuthController } from './auth.controller.js';
 import { OAuth2Client } from 'google-auth-library';
-import { JwtStrategy } from 'src/common/strategies/jwt.strategy';
-import ResetPasswordStrategy from 'src/common/strategies/ResetPasswordStrategy';
+import { JwtStrategy } from '../common/strategies/jwt.strategy.js';
+import ResetPasswordStrategy from '../common/strategies/ResetPasswordStrategy.js';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/common/schemas/user/user.schema';
+import { User, UserSchema } from '../common/schemas/user/user.schema.js';
 import { ConfigService } from '@nestjs/config';
-import { CrewModule } from '@/crew/crew.module';
+import { CrewModule } from '../crew/crew.module.js';
 
 @Module({
   imports: [
