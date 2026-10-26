@@ -1,15 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../common/schemas/user/user.schema.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { TransactionStatus } from './enum/transaction-status.enum.js';
-import { TransactionType } from './enum/transaction-type.enum.js';
 import { Transaction, TransactionDocument } from './schemas/transaction.schema.js';
 import { TransactionMailService } from './transaction-mail.service.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { Earner, EarnerDocument } from './schemas/earner.schema.js';
-import { CopyTradePurchase, CopyTradePurchaseDocument } from '../copy-trading/schemas/copy-trade-purchase.schema.js';
+import { TransactionType } from './enum/transaction-type.enum.js';
 
 @Injectable()
 export class TransactionService {
@@ -17,20 +16,8 @@ export class TransactionService {
     @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Earner.name) private earnerModel: Model<EarnerDocument>,
-    @InjectModel(CopyTradePurchase.name) private purchaseModel: Model<CopyTradePurchaseDocument>,
     private readonly transactionMailService: TransactionMailService,
   ) { }
-
-  private DURATION_24_HOURS = 24 * 60 * 60 * 1000 //24 hours
-  private DURATION_30_MINUTES = 30 * 60 * 1000
-  private DURATION = this.DURATION_24_HOURS;
-
-  private handleDailyYield(existingCopyTradePurchases: CopyTradePurchaseDocument[]): number {
-    return existingCopyTradePurchases.reduce(
-      (total, purchase) => total + (purchase.dailyAverageProfit ?? 0),
-      0,
-    );
-  }
 
   async create(userId: string, dto: CreateTransactionDto) {
     if ([TransactionType.PROFIT, TransactionType.LOSS, TransactionType.DEPOSIT, TransactionType.WITHDRAW].includes(dto.type)) {
@@ -78,26 +65,11 @@ export class TransactionService {
   }
 
 
-  async createEarner(email: string) {
+  async getActiveEarner(email: string) {
     const existingUser = await this.userModel.findOne({ email })
     if (!existingUser) throw new NotFoundException('User not Found, please signup');
 
-    const existingEarner = await this.earnerModel.findOne({ userID: existingUser.userID, status: "pending" });
-    if (existingEarner) throw new BadRequestException("Yield already claimed or timer not finished");
-
-    const existingCopyTradePurchases = await this.purchaseModel.find({ userId: existingUser._id, status: "active" });
-    if (!existingCopyTradePurchases.length) return;
-    const daily_rate = this.handleDailyYield(existingCopyTradePurchases)
-
-    const now = Date.now();
-
-    const newEarner = await this.earnerModel.create({
-      userID: existingUser.userID,
-      daily_rate,
-      expiresAt: now + this.DURATION
-    });
-
-    await existingUser.save();
-    return { success: true, newEarner }
+    const earners = await this.earnerModel.find({ userId: existingUser._id, status: 'active' }).sort({ nextEarningDate: 1 });
+    return { success: earners.length > 0, earners };
   }
 }

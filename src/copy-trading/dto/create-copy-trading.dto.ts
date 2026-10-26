@@ -11,8 +11,9 @@ export class CreateCopyTradingDto {
   @IsOptional() @IsString() country?: string;
   @IsOptional() @IsArray() @Type(() => Number) @IsNumber({}, { each: true }) last_10_trades?: number[];
   @Matches(/^\d+\s+days?$/i, { message: 'duration must be in the format "30 days"' }) duration!: string;
-  @Type(() => Number) @IsNumber() @Min(0) dailyAverageProfit!: number;
+  @Type(() => Number) @IsNumber() @Min(0) @Max(100) dailyAveragePercentage!: number;
   @Type(() => Number) @IsNumber() @Min(0) purchases!: number;
   @Type(() => Number) @IsNumber() @Min(0) totalAssets!: number;
-  @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0.01) price!: number;
+  @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0.01) minInvestment!: number;
+  @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0.01) maxInvestment!: number;
 }

@@ -15,9 +15,9 @@ export class TransactionController {
     return this.transactionService.create(user.sub, dto);
   }
 
-  @Post('earners')
-  createEarner(@CurrentUser() user: { email: string }) {
-    return this.transactionService.createEarner(user.email);
+  @Get('active-earner')
+  getActiveEarner(@CurrentUser() user: { email: string }) {
+    return this.transactionService.getActiveEarner(user.email);
   }
 
   @Get()

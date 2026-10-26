@@ -14,7 +14,7 @@ export class CopyTradingController {
   @Get() findAll() { return this.copyTradingService.findAll(); }
   @Get('me/purchases') @UseGuards(JwtAuthGuard) myPurchases(@CurrentUser() user: { sub: string }) { return this.copyTradingService.getMyPurchases(user.sub); }
   @Get(':id') findOne(@Param('id') id: string) { return this.copyTradingService.findOne(id); }
-  @Post(':id/buy') @UseGuards(JwtAuthGuard) buy(@CurrentUser() user: { sub: string }, @Param('id') id: string) { return this.copyTradingService.buy(user.sub, id); }
+  @Post(':id/buy') @UseGuards(JwtAuthGuard) buy(@CurrentUser() user: { sub: string }, @Param('id') id: string, @Body() dto: BuyCopyTradingDto) { return this.copyTradingService.buy(user.sub, id, dto); }
   @Post('purchases/:purchaseId/add-funds') @UseGuards(JwtAuthGuard) addFunds(@CurrentUser() user: { sub: string }, @Param('purchaseId') purchaseId: string, @Body() dto: BuyCopyTradingDto) { return this.copyTradingService.addFunds(user.sub, purchaseId, dto); }
   @Post('purchases/:purchaseId/liquidate') @UseGuards(JwtAuthGuard) liquidate(@CurrentUser() user: { sub: string }, @Param('purchaseId') purchaseId: string, @Body() dto: LiquidateCopyTradingDto) { return this.copyTradingService.liquidate(user.sub, purchaseId, dto); }
   @Post() @UseGuards(JwtAuthGuard, AdminGuard) create(@Body() dto: CreateCopyTradingDto) { return this.copyTradingService.create(dto); }

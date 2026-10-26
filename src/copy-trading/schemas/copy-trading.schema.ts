@@ -13,8 +13,9 @@ export class CopyTrading {
   @Prop({ required: true }) duration!: string;
   @Prop({ type: Number, required: true, min: 0 }) purchases!: number;
   @Prop({ type: Number, min: 0, default: 5 }) totalAssets!: number;
-  @Prop({ type: Number, required: true, min: 0.01 }) price!: number;
-  @Prop({ type: Number, required: true }) dailyAverageProfit!: number;
+  @Prop({ type: Number, required: true, min: 0.01 }) minInvestment!: number;
+  @Prop({ type: Number, required: true, min: 0.01 }) maxInvestment!: number;
+  @Prop({ type: Number, required: true, min: 0, max: 100 }) dailyAveragePercentage!: number;
   @Prop({ default: 'USD', uppercase: true, trim: true }) currency!: string;
 }
 export const CopyTradingSchema = SchemaFactory.createForClass(CopyTrading);

@@ -74,6 +74,13 @@ export class AdminService {
   }
 
   async updateCopyTrading(id: string, dto: UpdateCopyTradingDto) {
+    if (dto.minInvestment !== undefined || dto.maxInvestment !== undefined) {
+      const current = await this.copyTradingModel.findById(id).select('minInvestment maxInvestment');
+      if (!current) throw new NotFoundException('Copy-trading plan not found');
+      const minInvestment = dto.minInvestment ?? current.minInvestment;
+      const maxInvestment = dto.maxInvestment ?? current.maxInvestment;
+      if (maxInvestment < minInvestment) throw new BadRequestException('maxInvestment must be greater than or equal to minInvestment');
+    }
     const trade = await this.copyTradingModel.findByIdAndUpdate(id, dto, { new: true, runValidators: true });
     if (!trade) throw new NotFoundException('Copy-trading plan not found');
     return trade;

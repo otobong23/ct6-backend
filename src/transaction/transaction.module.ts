@@ -11,6 +11,7 @@ import { UserOrdersService } from './UserOrders.service.js';
 import { Earner, EarnerSchema } from './schemas/earner.schema.js';
 import { CopyTradePurchase, CopyTradePurchaseSchema } from '../copy-trading/schemas/copy-trade-purchase.schema.js';
 import { CrewModule } from '../crew/crew.module.js';
+import { CopyTradeEarningsWorker } from './copy-trade-earnings.worker.js';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { CrewModule } from '../crew/crew.module.js';
     ]),
   ],
   controllers: [TransactionController, UserOrdersController],
-  providers: [TransactionService, TransactionMailService, UserOrdersService],
+  providers: [TransactionService, TransactionMailService, UserOrdersService, CopyTradeEarningsWorker],
   exports: [TransactionService, TransactionMailService, UserOrdersService],
 })
 export class TransactionModule {}
