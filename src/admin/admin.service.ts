@@ -18,6 +18,7 @@ import { CrewService } from '../crew/crew.service.js';
 import { CrewExtraService } from '../crew/crewExtra.service.js';
 import { Crew, CrewDocument } from '../crew/schema/userCrew.schema.js';
 import type { CrewModel } from '../crew/schema/userCrew.schema.js';
+import { HashData } from '../common/hashed/hashed.data.js';
 
 @Injectable()
 export class AdminService {
@@ -30,7 +31,9 @@ export class AdminService {
   }
 
   async updateUser(id: string, dto: UpdateUserAdministrationDto) {
-    const user = await this.userModel.findByIdAndUpdate(id, dto, { returnDocument: 'after', runValidators: true }).select('-password -refreshToken');
+    const updateData = { ...dto };
+    if (updateData.walletPassword) updateData.walletPassword = await HashData(updateData.walletPassword);
+    const user = await this.userModel.findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: true }).select('-password -refreshToken');
     if (!user) throw new NotFoundException('User not found');
     return user;
   }

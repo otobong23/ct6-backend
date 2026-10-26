@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class WithdrawDto {
   @IsNotEmpty() @IsNumber()
@@ -7,4 +7,9 @@ export class WithdrawDto {
   @IsOptional()
   @IsString()
   walletAddress: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  walletPassword: string;
 }

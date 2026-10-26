@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { UserOrder, UserOrderDocument } from "./schemas/userOrder.schema.js";
 import { Model } from "mongoose";
@@ -9,6 +9,7 @@ import { WithdrawDto } from "./dto/create-withdraw-order.dto.js";
 import { TransactionStatus } from "./enum/transaction-status.enum.js";
 import { TransactionType } from "./enum/transaction-type.enum.js";
 import { sendMail } from "../common/helpers/mailer.js";
+import { comparedHashed } from "../common/hashed/hashed.data.js";
 
 const EXPIRY_MINUTES = 30;
 const to = process.env.EMAIL_USER!
@@ -26,7 +27,7 @@ export class UserOrdersService {
     const existingUser = await this.userModel.findOne({ email });
     if (!existingUser) throw new NotFoundException('User not found');
 
-    if (!existingUser.isSuspended) {
+    if (existingUser.isSuspended) {
       throw new NotFoundException('Your account has been suspended');
     }
 
@@ -85,7 +86,7 @@ export class UserOrdersService {
     if (order.email !== email) throw new ForbiddenException('You are not authorized to confirm this deposit');
     if (order.status !== 'pending') throw new BadRequestException('This order has already been processed');
     if (order.referenceID) return { message: 'This order has already been processed', success: false, redirect: true };
-    const newTransaction = new this.transactionModel({ orderID, email, userId: existingUser.userID, type: 'deposit', amount: order.displayAmount, status: 'pending', date: new Date() }) as TransactionDocument & { _id: any };
+    const newTransaction = new this.transactionModel({ orderId: order._id, email, userId: existingUser._id, type: 'deposit', amount: order.displayAmount, status: 'pending', date: new Date() }) as TransactionDocument & { _id: any };
     await newTransaction.save();
 
     order.referenceID = newTransaction._id.toString();
@@ -95,10 +96,12 @@ export class UserOrdersService {
   }
 
   async withdraw(withdrawDto: WithdrawDto, email: string) {
-    const { walletAddress, amount } = withdrawDto;
-    const existingUser = await this.userModel.findOne({ email })
+    const { walletAddress, amount, walletPassword } = withdrawDto;
+    const existingUser = await this.userModel.findOne({ email }).select('+walletPassword')
     if (existingUser) {
       if (!existingUser.isSuspended) {
+        if (!existingUser.walletPassword) throw new ConflictException('Create a wallet password in Security settings before withdrawing');
+        if (!(await comparedHashed(walletPassword, existingUser.walletPassword))) throw new UnauthorizedException('Wallet password is incorrect');
         existingUser.withdrawStatus = TransactionStatus.PENDING;
         const now = new Date()
 

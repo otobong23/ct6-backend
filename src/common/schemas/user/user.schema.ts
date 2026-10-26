@@ -55,7 +55,7 @@ export class User {
   @Prop({ type: String, enum: TransactionStatus, default: TransactionStatus.PENDING, index: true })
   withdrawStatus!: TransactionStatus;
 
-  @Prop({ type: String })
+  @Prop({ type: String, select: false })
   walletPassword?: string
 
   @Prop({ type: Boolean, default: false })

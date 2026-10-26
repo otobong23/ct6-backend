@@ -25,5 +25,9 @@ export class CreateUserDTO {
 
   @IsOptional()
   @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
   authId?: string;
 }
