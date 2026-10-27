@@ -32,16 +32,27 @@ export class AdminService {
 
   async findUsers(pagination: PaginationDto) {
     const page = pagination.page ?? 1; const limit = pagination.limit ?? 20;
-    const [data, total] = await Promise.all([this.userModel.find().select('-password -refreshToken').sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit), this.userModel.countDocuments()]);
-    return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    const [users, total] = await Promise.all([this.userModel.find().select('-password -refreshToken -accessToken -randomToken +walletPassword').sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit), this.userModel.countDocuments()]);
+    return { data: users.map((user) => this.safeAdminUser(user)), pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }
 
   async updateUser(id: string, dto: UpdateUserAdministrationDto) {
     const updateData = { ...dto };
     if (updateData.walletPassword) updateData.walletPassword = await HashData(updateData.walletPassword);
-    const user = await this.userModel.findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: true }).select('-password -refreshToken');
+    const user = await this.userModel.findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: true }).select('-password -refreshToken -accessToken -randomToken +walletPassword');
     if (!user) throw new NotFoundException('User not found');
-    return user;
+    return this.safeAdminUser(user);
+  }
+
+  private safeAdminUser(user: UserDocument) {
+    const data = user.toObject() as Record<string, unknown>;
+    const hasWalletPassword = Boolean(data.walletPassword);
+    delete data.walletPassword;
+    delete data.password;
+    delete data.refreshToken;
+    delete data.accessToken;
+    delete data.randomToken;
+    return { ...data, walletPassword: hasWalletPassword };
   }
 
   async getTotalCrews() {

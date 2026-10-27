@@ -11,10 +11,10 @@ import { comparedHashed, HashData } from '../common/hashed/hashed.data.js';
 export class UserService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
 
-  async findUserById(id: string): Promise<UserDocument> {
-    const user = await this.userModel.findById(id);
+  async findUserById(id: string) {
+    const user = await this.userModel.findById(id).select('+walletPassword -password -refreshToken -accessToken -randomToken');
     if (!user) throw new NotFoundException('User not found');
-    return user;
+    return { ...user.toObject(), walletPassword: Boolean(user.walletPassword) };
   }
 
   async updateProfile(id: string, updateData: UpdateUserDTO) {
