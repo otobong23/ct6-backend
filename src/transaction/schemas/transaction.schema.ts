@@ -30,6 +30,9 @@ export class Transaction {
   @Prop({ type: String, trim: true })
   reference?: string;
 
+  @Prop({ type: String, trim: true })
+  withdrawWalletAddress?: string;
+
   @Prop({ type: String, trim: true, maxlength: 1000 })
   note?: string;
 
