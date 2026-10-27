@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Headers, Logger, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../common/guards/admin.guard.js';
 import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
 import { LoginDto } from '../auth/dto/auth.dto.js';
@@ -10,6 +10,7 @@ import { AdminService } from './admin.service.js';
 import { AdminCopyTradePurchaseQueryDto, AdminUserParamsDto } from './dto/admin-purchase-query.dto.js';
 import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto.js';
 import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto.js';
+import { verifyPaymentsSignature } from '@/common/helpers/verifiyPaymentSignature.js';
 
 @Controller('admin')
 export class AdminController {
@@ -95,5 +96,31 @@ export class AdminController {
   @Patch('detachUser')
   async detachUser(@Body() { userID }: { userID: string }) {
     return await this.adminService.deleteUserCascade(userID)
+  }
+}
+
+
+@Controller('webhook')
+export class USDTPaymentsController {
+  constructor(private readonly adminService: AdminService) { }
+  private readonly logger = new Logger(USDTPaymentsController.name);
+
+  @Post('usdt-payment')
+  async usdtpaymentsWebhook(
+    @Req() req: any,
+    @Headers("x-signature") signature: string
+  ) {
+
+    const rawBody = req.rawBody;
+
+    const isValid = verifyPaymentsSignature(rawBody, signature);
+    if (!isValid) {
+      throw new ForbiddenException("Invalid webhook signature");
+    }
+
+    const body = JSON.parse(rawBody) as USDT_PaymentPayload;
+    if (body.event !== "confirmed") return;
+
+    return this.adminService.ReviewTransaction(body.data);
   }
 }

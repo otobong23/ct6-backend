@@ -85,6 +85,9 @@ export class User {
   @Prop({ type: Boolean, default: false })
   referral_reward_count_recieved!: boolean;
 
+  @Prop({ type: Boolean, default: false })
+  oneTimeBonus!: boolean;
+
 
 
   @Prop({ type: String })

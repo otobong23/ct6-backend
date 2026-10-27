@@ -37,7 +37,7 @@ export class Transaction {
   @Prop({ type: String })
   proofPaymentDocument?: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'PaymentOrder', index: true })
+  @Prop({ type: Types.ObjectId, ref: 'UserOrder', index: true })
   orderId?: Types.ObjectId;
 }
 

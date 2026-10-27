@@ -11,12 +11,14 @@ import { CopyTradePurchase, CopyTradePurchaseSchema } from '../copy-trading/sche
 import { CopyTrading, CopyTradingSchema } from '../copy-trading/schemas/copy-trading.schema.js';
 import { Crew, CrewSchema } from '../crew/schema/userCrew.schema.js';
 import { CrewModule } from '../crew/crew.module.js';
+import { UserOrder, UserOrderSchema } from '@/transaction/schemas/userOrder.schema.js';
 
 @Module({ imports: [AuthModule, TransactionModule, CrewModule, MongooseModule.forFeature([
   { name: User.name, schema: UserSchema },
   { name: Transaction.name, schema: TransactionSchema },
   { name: Crew.name, schema: CrewSchema },
   { name: CopyTradePurchase.name, schema: CopyTradePurchaseSchema },
+  { name: UserOrder.name, schema: UserOrderSchema },
   { name: CopyTrading.name, schema: CopyTradingSchema },
 ])], controllers: [AdminController], providers: [AdminService, AdminGuard] })
 export class AdminModule {}

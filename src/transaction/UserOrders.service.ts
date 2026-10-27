@@ -10,9 +10,9 @@ import { TransactionStatus } from "./enum/transaction-status.enum.js";
 import { TransactionType } from "./enum/transaction-type.enum.js";
 import { sendMail } from "../common/helpers/mailer.js";
 import { comparedHashed } from "../common/hashed/hashed.data.js";
+import { ConfigService } from "@nestjs/config";
 
 const EXPIRY_MINUTES = 30;
-const to = process.env.EMAIL_USER!
 
 @Injectable()
 export class UserOrdersService {
@@ -20,6 +20,7 @@ export class UserOrdersService {
     @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(UserOrder.name) private readonly userOrderModel: Model<UserOrderDocument>,
+    private configService: ConfigService
   ) { }
 
   async generatePaymentAddress(amount: number, email: string): Promise<{ message: string, order: UserOrderDocument }> {
@@ -131,9 +132,9 @@ export class UserOrdersService {
 
         existingUser.balance -= amount;
         const percent = Number(amount) * 0.10
-        const newTransaction = new this.transactionModel({ email, userId: existingUser.userID, type: 'withdrawal', amount, status: 'pending', withdrawWalletAddress: walletAddress, date: new Date(), displayAmount: amount - percent }) as TransactionDocument & { _id: any };
+        const newTransaction = new this.transactionModel({ email, userId: existingUser.userID, type: TransactionType.WITHDRAW, amount, status: 'pending', withdrawWalletAddress: walletAddress, date: new Date(), displayAmount: amount - percent }) as TransactionDocument & { _id: any };
         await newTransaction.save();
-        const mailSent = await sendMail(to, existingUser.email, amount - percent, newTransaction._id.toString(), 'withdrawal')
+        const mailSent = await sendMail(this.configService.getOrThrow('ADMIN_EMAIL'), existingUser.email, amount - percent, newTransaction._id.toString(), 'withdrawal')
         if (!mailSent) {
           throw new InternalServerErrorException('Failed to send withdrawal Confirmation email')
         }
