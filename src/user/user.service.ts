@@ -5,6 +5,7 @@ import { User, UserDocument } from '../common/schemas/user/user.schema.js';
 import { UpdateUserDTO } from './dto/update.user.dto.js';
 import { WalletPasswordDto } from './dto/wallet-password.dto.js';
 import { comparedHashed, HashData } from '../common/hashed/hashed.data.js';
+import { BindWalletAddressDto } from './dto/bind-wallet-address.dto.js';
 
 /** Owns profile data only. Account creation, credentials and tokens belong to AuthService. */
 @Injectable()
@@ -42,6 +43,18 @@ export class UserService {
     user.walletPassword = await HashData(dto.newPassword);
     await user.save();
     return { success: true, message: 'Wallet password changed successfully' };
+  }
+
+  async bindWalletAddress(id: string, dto: BindWalletAddressDto) {
+    const user = await this.userModel.findById(id).select('+walletPassword');
+    if (!user) throw new NotFoundException('User not found');
+    if (!user.walletPassword) throw new ConflictException('Create a wallet password before binding a wallet address.');
+    if (!(await comparedHashed(dto.walletPassword, user.walletPassword))) {
+      throw new UnauthorizedException('Wallet password is incorrect');
+    }
+    user.walletAddress = dto.walletAddress.trim();
+    await user.save();
+    return { success: true, message: 'Wallet address updated successfully', walletAddress: user.walletAddress };
   }
 
   async deleteOwnAccount(id: string) {

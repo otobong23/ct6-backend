@@ -6,6 +6,7 @@ import { UpdateUserDTO } from './dto/update.user.dto.js';
 import { WalletPasswordDto } from './dto/wallet-password.dto.js';
 import { UserDto } from './dto/user.dto.js';
 import { UserService } from './user.service.js';
+import { BindWalletAddressDto } from './dto/bind-wallet-address.dto.js';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -32,6 +33,11 @@ export class UserController {
   @Patch('wallet-password')
   changeWalletPassword(@Body() payload: WalletPasswordDto, @CurrentUser() user: { sub: string }) {
     return this.userService.changeWalletPassword(user.sub, payload);
+  }
+
+  @Patch('wallet-address')
+  bindWalletAddress(@Body() payload: BindWalletAddressDto, @CurrentUser() user: { sub: string }) {
+    return this.userService.bindWalletAddress(user.sub, payload);
   }
 
   @Delete('account')

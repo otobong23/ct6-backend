@@ -108,12 +108,13 @@ export class UserOrdersService {
   }
 
   async withdraw(withdrawDto: WithdrawDto, email: string) {
-    const { walletAddress, amount, walletPassword } = withdrawDto;
+    const { amount, walletPassword } = withdrawDto;
     const existingUser = await this.userModel.findOne({ email }).select('+walletPassword')
     if (existingUser) {
       if (!existingUser.isSuspended) {
         if (!existingUser.walletPassword) throw new ConflictException('Create a wallet password in Security settings before withdrawing');
         if (!(await comparedHashed(walletPassword, existingUser.walletPassword))) throw new UnauthorizedException('Wallet password is incorrect');
+        if (!existingUser.walletAddress?.trim()) throw new ConflictException('Bind a wallet address in Profile settings before withdrawing');
         existingUser.withdrawStatus = TransactionStatus.PENDING;
         const now = new Date()
 
@@ -143,7 +144,7 @@ export class UserOrdersService {
 
         existingUser.balance -= amount;
         const percent = Number(amount) * 0.10
-        const newTransaction = new this.transactionModel({ email, userId: existingUser._id, type: TransactionType.WITHDRAW, amount, status: 'pending', withdrawWalletAddress: walletAddress, date: new Date(), displayAmount: amount - percent }) as TransactionDocument & { _id: any };
+        const newTransaction = new this.transactionModel({ email, userId: existingUser._id, type: TransactionType.WITHDRAW, amount, status: 'pending', withdrawWalletAddress: existingUser.walletAddress.trim(), date: new Date(), displayAmount: amount - percent }) as TransactionDocument & { _id: any };
         await newTransaction.save();
         try {
           await existingUser.save();
