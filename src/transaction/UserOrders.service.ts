@@ -11,6 +11,8 @@ import { TransactionType } from "./enum/transaction-type.enum.js";
 import { sendMail } from "../common/helpers/mailer.js";
 import { comparedHashed } from "../common/hashed/hashed.data.js";
 import { ConfigService } from "@nestjs/config";
+import { CreateDepositTransactionDto } from "./dto/create-deposit-transaction.dto.js";
+import { TransactionMailService } from "./transaction-mail.service.js";
 
 const EXPIRY_MINUTES = 30;
 
@@ -20,7 +22,8 @@ export class UserOrdersService {
     @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(UserOrder.name) private readonly userOrderModel: Model<UserOrderDocument>,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private readonly transactionMailService: TransactionMailService,
   ) { }
 
   async generatePaymentAddress(amount: number, email: string): Promise<{ message: string, order: UserOrderDocument }> {
@@ -79,7 +82,7 @@ export class UserOrdersService {
     }
   }
 
-  async createDepositTransaction(orderID: string, email: string) {
+  async createDepositTransaction(orderID: string, email: string, dto: CreateDepositTransactionDto) {
     const existingUser = await this.userModel.findOne({ email });
     if (!existingUser) throw new NotFoundException('User not found. Please sign up.');
     const order = await this.userOrderModel.findById(orderID);
@@ -87,12 +90,20 @@ export class UserOrdersService {
     if (order.email !== email) throw new ForbiddenException('You are not authorized to confirm this deposit');
     if (order.status !== 'pending') throw new BadRequestException('This order has already been processed');
     if (order.referenceID) return { message: 'This order has already been processed', success: false, redirect: true };
-    const newTransaction = new this.transactionModel({ orderId: order._id, email, userId: existingUser._id, type: 'deposit', amount: order.displayAmount, status: 'pending', date: new Date() }) as TransactionDocument & { _id: any };
-    await newTransaction.save();
-
-    order.referenceID = newTransaction._id.toString();
-    await order.save();
-    // const mailSent = await sendMail(to, existingUser.email, Number(order.displayAmount), newTransaction._id.toString(), 'deposit')
+    const claimed = await this.userOrderModel.updateOne(
+      { _id: order._id, status: 'pending', referenceID: { $in: [null, ''] } },
+      { $set: { referenceID: 'submitting' } },
+    );
+    if (!claimed.modifiedCount) throw new BadRequestException('This order has already been submitted');
+    const newTransaction = new this.transactionModel({ orderId: order._id, email, userId: existingUser._id, type: TransactionType.DEPOSIT, amount: order.expectedAmount ?? order.displayAmount, reference: dto.txid.trim(), paymentTxHash: order.paymentTxHash, proofPaymentDocument: dto.proofPaymentDocument, status: TransactionStatus.PENDING, date: new Date() }) as TransactionDocument & { _id: any };
+    try {
+      await newTransaction.save();
+      await this.userOrderModel.updateOne({ _id: order._id, referenceID: 'submitting' }, { $set: { referenceID: newTransaction._id.toString() } });
+    } catch (error) {
+      await this.userOrderModel.updateOne({ _id: order._id, referenceID: 'submitting' }, { $unset: { referenceID: 1 } });
+      throw error;
+    }
+    await this.transactionMailService.sendPendingTransactionToAdmin(newTransaction);
     return { message: 'Deposit request submitted successfully', transaction: newTransaction, redirect: false }
   }
 
@@ -132,14 +143,15 @@ export class UserOrdersService {
 
         existingUser.balance -= amount;
         const percent = Number(amount) * 0.10
-        const newTransaction = new this.transactionModel({ email, userId: existingUser.userID, type: TransactionType.WITHDRAW, amount, status: 'pending', withdrawWalletAddress: walletAddress, date: new Date(), displayAmount: amount - percent }) as TransactionDocument & { _id: any };
+        const newTransaction = new this.transactionModel({ email, userId: existingUser._id, type: TransactionType.WITHDRAW, amount, status: 'pending', withdrawWalletAddress: walletAddress, date: new Date(), displayAmount: amount - percent }) as TransactionDocument & { _id: any };
         await newTransaction.save();
-        const mailSent = await sendMail(this.configService.getOrThrow('ADMIN_EMAIL'), existingUser.email, amount - percent, newTransaction._id.toString(), 'withdrawal')
-        if (!mailSent) {
-          throw new InternalServerErrorException('Failed to send withdrawal Confirmation email')
+        try {
+          await existingUser.save();
+        } catch (error) {
+          await this.transactionModel.deleteOne({ _id: newTransaction._id, status: TransactionStatus.PENDING });
+          throw error;
         }
-
-        await existingUser.save();
+        await sendMail(this.configService.getOrThrow('ADMIN_EMAIL'), existingUser.email, amount - percent, newTransaction._id.toString(), 'withdrawal');
         // await this.crewService.updateCrewOnTransaction(existingUser.userID, "withdraw", amount)
         return { message: 'Withdrawal request submitted successfully', newTransaction }
       } else {

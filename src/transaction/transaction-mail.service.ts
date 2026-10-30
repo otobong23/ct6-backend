@@ -52,10 +52,11 @@ export class TransactionMailService {
   }
 
   async sendCompletedTransactionToUser(transaction: TransactionDocument) {
+    const statusMessage = transaction.status === 'completed' ? 'has been completed' : `was ${transaction.status}`;
     return this.send(
       transaction.email,
-      `Your ${transaction.type} transaction is complete`,
-      `Your ${transaction.type} transaction has been completed.\n\nTransaction: ${transaction.transactionID}\nAmount: ${transaction.amount} ${transaction.currency}\nStatus: ${transaction.status}`,
+      `Your ${transaction.type} transaction ${statusMessage}`,
+      `Your ${transaction.type} transaction ${statusMessage}.\n\nTransaction: ${transaction.transactionID}\nAmount: ${transaction.amount} ${transaction.currency}\nStatus: ${transaction.status}`,
     );
   }
 }

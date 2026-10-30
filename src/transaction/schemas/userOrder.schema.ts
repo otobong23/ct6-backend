@@ -41,6 +41,15 @@ export class UserOrder {
   @Prop({ type: String })
   referenceID: string;
 
+  @Prop({ type: String, trim: true })
+  paymentTxHash?: string;
+
+  @Prop({ type: Number })
+  paymentReceivedAmount?: number;
+
+  @Prop({ type: Date })
+  paymentReceivedAt?: Date;
+
   @Prop({ type: Date, required: true })
   expiresAt: Date;
 }

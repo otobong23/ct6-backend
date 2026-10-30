@@ -21,14 +21,12 @@ import type { CrewModel } from '../crew/schema/userCrew.schema.js';
 import { HashData } from '../common/hashed/hashed.data.js';
 import { UserOrder, UserOrderDocument } from '@/transaction/schemas/userOrder.schema.js';
 import { TransactionStatus } from '@/transaction/enum/transaction-status.enum.js';
-import { sendMail } from '@/common/helpers/mailer.js';
-import { ConfigService } from '@nestjs/config';
 
 
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectModel(User.name) private readonly userModel: UserModel, @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>, @InjectModel(CopyTradePurchase.name) private readonly copyTradePurchaseModel: Model<CopyTradePurchaseDocument>, @InjectModel(CopyTrading.name) private readonly copyTradingModel: Model<CopyTradingDocument>, private readonly transactionMailService: TransactionMailService, private crewService: CrewService, private crewExtraService: CrewExtraService, @InjectModel(Crew.name) private crewModel: CrewModel, @InjectModel(UserOrder.name) private readonly userOrderModel: Model<UserOrderDocument>, private configService: ConfigService) { }
+  constructor(@InjectModel(User.name) private readonly userModel: UserModel, @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>, @InjectModel(CopyTradePurchase.name) private readonly copyTradePurchaseModel: Model<CopyTradePurchaseDocument>, @InjectModel(CopyTrading.name) private readonly copyTradingModel: Model<CopyTradingDocument>, private readonly transactionMailService: TransactionMailService, private crewService: CrewService, private crewExtraService: CrewExtraService, @InjectModel(Crew.name) private crewModel: CrewModel, @InjectModel(UserOrder.name) private readonly userOrderModel: Model<UserOrderDocument>) { }
 
   async findUsers(pagination: PaginationDto) {
     const page = pagination.page ?? 1; const limit = pagination.limit ?? 20;
@@ -115,13 +113,47 @@ export class AdminService {
   async updateTransactionStatus(id: string, dto: UpdateTransactionStatusDto) {
     const existing = await this.transactionModel.findById(id);
     if (!existing) throw new NotFoundException('Transaction not found');
-    if (existing.orderId) throw new BadRequestException('Use the payment-order endpoint to update an order transaction');
+    if ([TransactionType.DEPOSIT, TransactionType.WITHDRAW].includes(existing.type)) {
+      if (existing.status !== TransactionStatus.PENDING) throw new BadRequestException('Only pending transactions can be reviewed');
+      if (dto.status === TransactionStatus.PENDING) throw new BadRequestException('Choose completed, rejected, or failed');
+      const transaction = await this.transactionModel.findOneAndUpdate(
+        { _id: id, status: TransactionStatus.PENDING },
+        { $set: { status: dto.status } },
+        { new: true, runValidators: true },
+      );
+      if (!transaction) throw new BadRequestException('Transaction was already reviewed');
+
+      const userUpdate: any = {};
+      if (transaction.type === TransactionType.DEPOSIT && dto.status === TransactionStatus.COMPLETED) {
+        userUpdate.$inc = { balance: transaction.amount, totalDeposit: transaction.amount, transactionCount: 1 } as any;
+      } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.REJECTED) {
+        userUpdate.$inc = { balance: transaction.amount } as any;
+      } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.FAILED) {
+        userUpdate.$inc = { balance: transaction.amount } as any;
+      } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.COMPLETED) {
+        userUpdate.$inc = { totalWithdraw: transaction.amount, transactionCount: 1 } as any;
+      }
+      if (transaction.type === TransactionType.WITHDRAW) userUpdate.$set = { withdrawStatus: dto.status };
+      if (Object.keys(userUpdate).length) {
+        const userResult = await this.userModel.updateOne({ _id: transaction.userId }, userUpdate);
+        if (!userResult.matchedCount) {
+          await this.transactionModel.updateOne({ _id: transaction._id, status: dto.status }, { $set: { status: TransactionStatus.PENDING } });
+          throw new NotFoundException('Transaction owner not found');
+        }
+      }
+      if (transaction.orderId) {
+        await this.userOrderModel.updateOne(
+          { _id: transaction.orderId },
+          { $set: { status: dto.status === TransactionStatus.COMPLETED ? 'completed' : 'failed' } },
+        );
+      }
+      if (dto.status === TransactionStatus.COMPLETED || dto.status === TransactionStatus.REJECTED) {
+        await this.transactionMailService.sendCompletedTransactionToUser(transaction);
+      }
+      return transaction;
+    }
     const transaction = await this.transactionModel.findByIdAndUpdate(id, dto, { new: true, runValidators: true });
     if (!transaction) throw new NotFoundException('Transaction not found');
-    if (transaction.status === 'pending' && [TransactionType.DEPOSIT, TransactionType.WITHDRAW].includes(transaction.type)) {
-      await this.transactionMailService.sendPendingTransactionToAdmin(transaction);
-    }
-    if (transaction.status === 'completed') await this.transactionMailService.sendCompletedTransactionToUser(transaction);
     return transaction;
   }
 
@@ -129,8 +161,6 @@ export class AdminService {
 
     const {
       txHash,
-      from,
-      to,
       amount,
     } = payload;
     const credited = Number(amount);
@@ -151,84 +181,20 @@ export class AdminService {
       return { ok: false };
     }
 
-    const existingUser = await this.userModel.findOneAndUpdate({ email: order.email }, { $inc: { balance: order.expectedAmount } }, { new: true });
-    if (!existingUser) {
-      console.warn(`User not found for amount: ${credited} with email: ${order.email}`);
-      return { ok: false };
-    }
-
-    //update user balance
-    // await this.useUserBalance(order.email, order.expectedAmount, 'add');
-
-
-    // 4️⃣ Referral bonus
-    if (existingUser.oneTimeBonus) {
-      await this.crewService.awardReferralBonus(
-        existingUser.userID,
-        order.expectedAmount,
-        "first_deposit"
-      );
-      existingUser.oneTimeBonus = false;
-      await existingUser.save();
-    }
-
-    // 5️⃣ Update admin stats
-    // await this.updateAdminTotals("deposit", order.expectedAmount);
-
-    let transaction;
-
-    if (order.referenceID) {
-      transaction = await this.transactionModel.findById(order.referenceID);
-    }
-
-    // 6️⃣ Create or update transaction
-    if (!transaction) {
-
-      transaction = await this.transactionModel.create({
-        email: order.email,
-        userId: existingUser._id,
-        type: TransactionType.DEPOSIT,
-        amount: order.expectedAmount,
-        status: TransactionStatus.COMPLETED,
-        orderId: order._id,
-      });
-
-      order.referenceID = transaction._id.toString();
-
-    } else {
-      transaction.status = "completed";
-
-      await transaction.save();
-    }
-
-    // 7️⃣ Mark order completed
-    order.status = "completed";
+    order.paymentTxHash = txHash;
+    order.paymentReceivedAmount = credited;
+    order.paymentReceivedAt = new Date();
     await order.save();
 
-    console.log(`Payment ${txHash} confirmed for address ${to}`);
+    if (order.referenceID && order.referenceID !== 'submitting') {
+      await this.transactionModel.updateOne(
+        { _id: order.referenceID, status: TransactionStatus.PENDING },
+        { $set: { paymentTxHash: txHash } },
+      );
+    }
 
-    // 8️⃣ Notify user
-    await sendMail(
-      this.configService.getOrThrow('ADMIN_EMAIL'),
-      existingUser.email,
-      order.expectedAmount,
-      transaction._id.toString(),
-      "deposit"
-    );
-
-    await this.crewService.updateCrewOnTransaction(
-      existingUser.userID,
-      "deposit",
-      order.expectedAmount
-    );
-
-    console.log({
-      success: true,
-      message: "Transaction Processed Successfully",
-      transaction
-    });
-
-    return { ok: true };
+    console.log(`Payment ${txHash} recorded for admin review on order ${order._id}`);
+    return { ok: true, pendingAdminReview: true };
   }
 
   async searchUsers(keyword: string): Promise<UserDocument[]> {

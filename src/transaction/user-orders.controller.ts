@@ -3,6 +3,7 @@ import { CurrentUser } from '../common/decorator/current.logged.user.js';
 import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
 import { CreateUserOrderDto } from './dto/create-user-order.dto.js';
 import { WithdrawDto } from './dto/create-withdraw-order.dto.js';
+import { CreateDepositTransactionDto } from './dto/create-deposit-transaction.dto.js';
 import { UserOrdersService } from './UserOrders.service.js';
 
 @Controller('transactions/orders')
@@ -22,8 +23,9 @@ export class UserOrdersController {
   confirmDeposit(
     @CurrentUser() user: { email: string },
     @Param('orderId') orderId: string,
+    @Body() dto: CreateDepositTransactionDto,
   ) {
-    return this.userOrdersService.createDepositTransaction(orderId, user.email);
+    return this.userOrdersService.createDepositTransaction(orderId, user.email, dto);
   }
 
   @Post('withdraw')

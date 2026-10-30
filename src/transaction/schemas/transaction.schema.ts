@@ -31,6 +31,9 @@ export class Transaction {
   reference?: string;
 
   @Prop({ type: String, trim: true })
+  paymentTxHash?: string;
+
+  @Prop({ type: String, trim: true })
   withdrawWalletAddress?: string;
 
   @Prop({ type: String, trim: true, maxlength: 1000 })
