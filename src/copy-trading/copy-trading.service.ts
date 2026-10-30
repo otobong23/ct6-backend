@@ -61,6 +61,7 @@ export class CopyTradingService {
       await session.withTransaction(async () => {
         const trade = await this.copyTradingModel.findById(tradeId).session(session);
         if (!trade) throw new NotFoundException('Copy-trading plan not found');
+        if (trade.locked) throw new BadRequestException(trade.lockedNote || 'This copy-trading plan is locked');
         const days = Number.parseInt(trade.duration, 10);
         if (!Number.isFinite(days) || days < 1) throw new BadRequestException('Copy-trading plan has an invalid duration');
         if (dto.amountInvested < trade.minInvestment || dto.amountInvested > trade.maxInvestment) throw new BadRequestException(`Investment must be between ${trade.minInvestment} and ${trade.maxInvestment}`);

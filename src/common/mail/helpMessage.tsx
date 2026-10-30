@@ -142,14 +142,14 @@ const HelpMessageMail: React.FC<HelpMessageProps> = ({
   message,
   timestamp = new Date().toLocaleString(),
 }) => {
-  const dashboard = 'https://www.ferrix.app/admin/dashboard';
+  const dashboard = 'https://www.ct6.space/admin/overview';
 
   return (
     <div style={styles.body}>
       <div style={styles.container}>
         {/* Header */}
         <div style={styles.header}>
-          <div style={styles.logo}>Ferrix</div>
+          <div style={styles.logo}></div>
           <div style={styles.tagline}>Support Notification</div>
         </div>
 
@@ -202,7 +202,7 @@ const HelpMessageMail: React.FC<HelpMessageProps> = ({
         {/* Footer */}
         <div style={styles.footer}>
           <p style={styles.footerText}>
-            <strong>Ferrix Trading Platform</strong>
+            <strong>CT6 Trading Platform</strong>
           </p>
           <p style={styles.footerText}>
             This is an automated support notification.

@@ -251,9 +251,9 @@ const TransactionStatusEmail: React.FC<TransactionStatusEmailProps> = ({
   reason,
   processingTime = "5-10 minutes"
 }) => {
-  const dashboard = 'https://www.ferrix.app/dashboard';
-  const transactions = 'https://www.ferrix.app/profile/transactions';
-  const support = 'https://www.ferrix.app/dashboard/help-center';
+  const dashboard = 'https://www.ct6.space/home';
+  const transactions = 'https://www.ct6.space/profile/history';
+  const support = 'https://www.ct6.space/profile/help';
 
   const isApproved = status === 'approved';
   const isDeclined = status === 'declined';
@@ -263,8 +263,8 @@ const TransactionStatusEmail: React.FC<TransactionStatusEmailProps> = ({
       <div style={styles.container}>
         {/* Header */}
         <div style={styles.header}>
-          <div style={styles.logo}>Ferrix</div>
-          <div style={styles.tagline}>Peer-to-Peer Trading Platform</div>
+          <div style={styles.logo}>CT6</div>
+          <div style={styles.tagline}>Copy Trading Platform</div>
         </div>
 
         {/* Content */}
@@ -396,7 +396,7 @@ const TransactionStatusEmail: React.FC<TransactionStatusEmailProps> = ({
 
           <p style={{ fontSize: '0.9rem', color: '#718096', textAlign: 'center', marginTop: '20px' }}>
             {isApproved 
-              ? 'Thank you for using Ferrix. We appreciate your business!'
+              ? 'Thank you for using CT6. We appreciate your business!'
               : 'We apologize for any inconvenience. Please don\'t hesitate to reach out if you have questions.'
             }
           </p>
@@ -405,10 +405,10 @@ const TransactionStatusEmail: React.FC<TransactionStatusEmailProps> = ({
         {/* Footer */}
         <div style={styles.footer}>
           <p style={styles.footerText}>
-            <strong>Ferrix Trading Platform</strong>
+            <strong>CT6 Trading Platform</strong>
           </p>
           <p style={styles.footerText}>
-            Modern P2P Bitcoin & Cryptocurrency Exchange
+            Modern Copy Trading Platform
           </p>
           <p style={styles.footerText}>
             This is an automated notification. Please do not reply to this email.

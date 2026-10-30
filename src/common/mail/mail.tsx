@@ -52,13 +52,13 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ username, code }) => {
     <div style={styles.body}>
       <div style={styles.container}>
         <div style={styles.logo}>
-          <img src='https://res.cloudinary.com/dxet6crme/image/upload/v1748654965/Frame-2_egfoww.svg' alt="logo Icon" style={styles.icon} />
+          <img src='https://collection.cloudinary.com/dxet6crme/6608380cffe7a222e5552c9a4c578c02' alt="logo Icon" style={styles.icon} />
         </div>
         {/* <img src={mail_image} alt="Envelope Icon" style={styles.icon} /> */}
         <h1 style={styles.h1}>Hi! {username}</h1>
-        <p style={styles.p}><a href="https://ferrix.app/">Welcome to Ferrix</a></p>
+        <p style={styles.p}><a href="https://ct6.space/home">Welcome to CT6</a></p>
         <p style={styles.p}>
-          Ferrix is a trading company where you can be a part of the peer-to-peer exchange community worldwide. Using modern business methods and person-to-person client approach, we offer a unique investment model to traders of bitcoin and other methods.
+          CT6 is a trading company where you can be a part of the Modern Copy Trading Platform community worldwide. Using modern business methods and person-to-person client approach, we offer a unique investment model to traders of bitcoin and other methods.
         </p>
         <p style={styles.p}>Reset Code</p>
         <h1 style={styles.h1}>{code}</h1>
