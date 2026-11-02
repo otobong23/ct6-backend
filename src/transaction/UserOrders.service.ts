@@ -124,9 +124,9 @@ export class UserOrdersService {
           weekday: "long"
         });
 
-        // Restrict weekends
-        if (["Saturday", "Sunday"].includes(day)) {
-          throw new ConflictException("Withdrawals aren't allowed on weekends. Withdrawals reopen at 09:00 AM Monday (Africa/Lagos time).");
+        // Restrict Sundays
+        if (["Sunday"].includes(day)) {
+          throw new ConflictException("Withdrawals aren't allowed on Sunday. Withdrawals reopen at 09:00 AM Monday (Africa/Lagos time).");
         }
 
         const hour = parseInt(now.toLocaleString("en-US", { timeZone: "Africa/Lagos", hour: "numeric", hour12: false }))
