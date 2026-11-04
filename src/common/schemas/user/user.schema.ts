@@ -22,7 +22,7 @@ export class User {
   @Prop({ type: String, required: true, default: '' })
   firstName!: string;
 
-  @Prop({ type: String, required: true, default: '' })
+  @Prop({ type: String, required: false, default: '' })
   lastName!: string;
 
   @Prop({ type: String, unique: true, sparse: true })
