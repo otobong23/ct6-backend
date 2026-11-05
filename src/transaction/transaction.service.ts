@@ -20,7 +20,7 @@ export class TransactionService {
   ) { }
 
   async create(userId: string, dto: CreateTransactionDto) {
-    if ([TransactionType.PROFIT, TransactionType.LOSS, TransactionType.DEPOSIT, TransactionType.WITHDRAW].includes(dto.type)) {
+    if ([TransactionType.PROFIT, TransactionType.LOSS, TransactionType.DEPOSIT, TransactionType.WITHDRAW, TransactionType.SYSTEM].includes(dto.type)) {
       throw new BadRequestException(`${dto.type} transactions must be created through their dedicated workflow`);
     }
     const user = await this.userModel.findById(userId).select('email');

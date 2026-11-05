@@ -21,6 +21,7 @@ import type { CrewModel } from '../crew/schema/userCrew.schema.js';
 import { HashData } from '../common/hashed/hashed.data.js';
 import { UserOrder, UserOrderDocument } from '@/transaction/schemas/userOrder.schema.js';
 import { TransactionStatus } from '@/transaction/enum/transaction-status.enum.js';
+import { GiftUserBalanceDto } from './dto/gift-user-balance.dto.js';
 
 
 
@@ -40,6 +41,34 @@ export class AdminService {
     const user = await this.userModel.findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: true }).select('-password -refreshToken -accessToken -randomToken +walletPassword');
     if (!user) throw new NotFoundException('User not found');
     return this.safeAdminUser(user);
+  }
+
+  async giftUserBalance(id: string, dto: GiftUserBalanceDto) {
+    const session = await this.userModel.db.startSession();
+    let result: { user: ReturnType<AdminService['safeAdminUser']>; transaction: TransactionDocument } | undefined;
+    try {
+      await session.withTransaction(async () => {
+        const user = await this.userModel.findByIdAndUpdate(
+          id,
+          { $inc: { balance: dto.amount, transactionCount: 1 } },
+          { new: true, session },
+        );
+        if (!user) throw new NotFoundException('User not found');
+        const [transaction] = await this.transactionModel.create([{
+          userId: user._id,
+          email: user.email,
+          type: TransactionType.SYSTEM,
+          status: TransactionStatus.COMPLETED,
+          amount: dto.amount,
+          currency: 'USD',
+          note: dto.note?.trim() || 'Balance gift from admin',
+        }], { session });
+        result = { user: this.safeAdminUser(user), transaction };
+      });
+      return result!;
+    } finally {
+      await session.endSession();
+    }
   }
 
   private safeAdminUser(user: UserDocument) {

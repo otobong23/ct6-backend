@@ -10,6 +10,7 @@ import { AdminService } from './admin.service.js';
 import { AdminCopyTradePurchaseQueryDto, AdminUserParamsDto } from './dto/admin-purchase-query.dto.js';
 import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto.js';
 import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto.js';
+import { GiftUserBalanceDto } from './dto/gift-user-balance.dto.js';
 import { verifyPaymentsSignature } from '@/common/helpers/verifiyPaymentSignature.js';
 
 @Controller('admin')
@@ -26,6 +27,12 @@ export class AdminController {
   @Patch('users/:id')
   @UseGuards(JwtAuthGuard, AdminGuard)
   updateUser(@Param('id') id: string, @Body() dto: UpdateUserAdministrationDto) { return this.adminService.updateUser(id, dto); }
+
+  @Post('users/:id/gift')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  giftUserBalance(@Param('id') id: string, @Body() dto: GiftUserBalanceDto) {
+    return this.adminService.giftUserBalance(id, dto);
+  }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Get('search/users')
