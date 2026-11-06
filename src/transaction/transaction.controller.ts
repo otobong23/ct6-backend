@@ -3,7 +3,7 @@ import { CurrentUser } from '../common/decorator/current.logged.user.js';
 import { JwtAuthGuard } from '../common/strategies/jwt-auth.guard.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { TransactionService } from './transaction.service.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { TransactionQueryDto } from './dto/transaction-query.dto.js';
 
 @Controller('transactions')
 @UseGuards(JwtAuthGuard)
@@ -21,8 +21,8 @@ export class TransactionController {
   }
 
   @Get()
-  findMine(@CurrentUser() user: { sub: string }, @Query() pagination: PaginationDto) {
-    return this.transactionService.findMine(user.sub, pagination);
+  findMine(@CurrentUser() user: { sub: string }, @Query() query: TransactionQueryDto) {
+    return this.transactionService.findMine(user.sub, query);
   }
 
   @Get(':id')

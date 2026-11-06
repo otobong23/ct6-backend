@@ -6,7 +6,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { TransactionStatus } from './enum/transaction-status.enum.js';
 import { Transaction, TransactionDocument } from './schemas/transaction.schema.js';
 import { TransactionMailService } from './transaction-mail.service.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { TransactionQueryDto } from './dto/transaction-query.dto.js';
 import { Earner, EarnerDocument } from './schemas/earner.schema.js';
 import { TransactionType } from './enum/transaction-type.enum.js';
 
@@ -41,12 +41,13 @@ export class TransactionService {
     return transaction;
   }
 
-  async findMine(userId: string, pagination: PaginationDto) {
-    const page = pagination.page ?? 1;
-    const limit = pagination.limit ?? 20;
+  async findMine(userId: string, query: TransactionQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const filter = { userId: new Types.ObjectId(userId), ...(query.type && query.type !== 'all' ? { type: query.type } : {}) };
     const [data, total] = await Promise.all([
-      this.transactionModel.find({ userId: new Types.ObjectId(userId) }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
-      this.transactionModel.countDocuments({ userId: new Types.ObjectId(userId) }),
+      this.transactionModel.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
+      this.transactionModel.countDocuments(filter),
     ]);
     return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }

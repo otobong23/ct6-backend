@@ -11,6 +11,7 @@ import { AdminCopyTradePurchaseQueryDto, AdminUserParamsDto } from './dto/admin-
 import { UpdateCopyTradingDto } from '../copy-trading/dto/update-copy-trading.dto.js';
 import { UpdateCopyTradePurchaseDto } from './dto/update-copy-trade-purchase.dto.js';
 import { GiftUserBalanceDto } from './dto/gift-user-balance.dto.js';
+import { TransactionQueryDto } from '../transaction/dto/transaction-query.dto.js';
 import { verifyPaymentsSignature } from '@/common/helpers/verifiyPaymentSignature.js';
 
 @Controller('admin')
@@ -42,7 +43,7 @@ export class AdminController {
 
   @Get('transactions')
   @UseGuards(JwtAuthGuard, AdminGuard)
-  transactions(@Query() pagination: PaginationDto) { return this.adminService.findTransactions(pagination); }
+  transactions(@Query() query: TransactionQueryDto) { return this.adminService.findTransactions(query); }
 
   @Patch('transactions/:id/status')
   @UseGuards(JwtAuthGuard, AdminGuard)

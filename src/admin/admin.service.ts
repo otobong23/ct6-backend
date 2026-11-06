@@ -22,6 +22,7 @@ import { HashData } from '../common/hashed/hashed.data.js';
 import { UserOrder, UserOrderDocument } from '@/transaction/schemas/userOrder.schema.js';
 import { TransactionStatus } from '@/transaction/enum/transaction-status.enum.js';
 import { GiftUserBalanceDto } from './dto/gift-user-balance.dto.js';
+import { TransactionQueryDto } from '../transaction/dto/transaction-query.dto.js';
 
 
 
@@ -104,9 +105,10 @@ export class AdminService {
     return this.crewService.getCrew(userID)
   }
 
-  async findTransactions(pagination: PaginationDto) {
-    const page = pagination.page ?? 1; const limit = pagination.limit ?? 20;
-    const [data, total] = await Promise.all([this.transactionModel.find().sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit), this.transactionModel.countDocuments()]);
+  async findTransactions(query: TransactionQueryDto) {
+    const page = query.page ?? 1; const limit = query.limit ?? 20;
+    const filter = query.type && query.type !== 'all' ? { type: query.type } : {};
+    const [data, total] = await Promise.all([this.transactionModel.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit), this.transactionModel.countDocuments(filter)]);
     return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }
 
