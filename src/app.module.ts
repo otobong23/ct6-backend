@@ -31,6 +31,7 @@ import { CrewModule } from './crew/crew.module.js';
         EMAIL_PASS: Joi.string().required(),
         ADMIN_EMAIL: Joi.string().email().optional(),
         OWNER_EMAIL: Joi.string().email().optional(),
+        DEVELOPER_EMAIL: Joi.string().email().required(),
         PASSWORD_RESET_URL: Joi.string().uri().optional(),
         NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
       }),

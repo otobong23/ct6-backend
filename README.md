@@ -31,6 +31,10 @@
 $ npm install
 ```
 
+## Transaction notifications
+
+Set `DEVELOPER_EMAIL` in the backend environment to the developer inbox. It is required at startup. The backend sends it a notification whenever a user submits a deposit or withdrawal request.
+
 ## Compile and run the project
 
 ```bash

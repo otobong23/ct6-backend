@@ -12,6 +12,7 @@ import { UpdateCopyTradingDto } from './dto/update-copy-trading.dto.js';
 import { CopyTradePurchase, CopyTradePurchaseDocument } from './schemas/copy-trade-purchase.schema.js';
 import { CopyTrading, CopyTradingDocument } from './schemas/copy-trading.schema.js';
 import { Earner, EarnerDocument } from '../transaction/schemas/earner.schema.js';
+import { Crew, CrewDocument } from '../crew/schema/userCrew.schema.js';
 
 @Injectable()
 export class CopyTradingService {
@@ -21,6 +22,7 @@ export class CopyTradingService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(Earner.name) private readonly earnerModel: Model<EarnerDocument>,
+    @InjectModel(Crew.name) private readonly crewModel: Model<CrewDocument>,
     @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
 
@@ -61,10 +63,17 @@ export class CopyTradingService {
       await session.withTransaction(async () => {
         const trade = await this.copyTradingModel.findById(tradeId).session(session);
         if (!trade) throw new NotFoundException('Copy-trading plan not found');
-        if (trade.locked) throw new BadRequestException(trade.lockedNote || 'This copy-trading plan is locked');
         const days = Number.parseInt(trade.duration, 10);
         if (!Number.isFinite(days) || days < 1) throw new BadRequestException('Copy-trading plan has an invalid duration');
         if (dto.amountInvested < trade.minInvestment || dto.amountInvested > trade.maxInvestment) throw new BadRequestException(`Investment must be between ${trade.minInvestment} and ${trade.maxInvestment}`);
+        const userRecord = await this.userModel.findById(userId).select('userID').session(session);
+        if (!userRecord) throw new NotFoundException('User not found');
+        const crew = await this.crewModel.findOne({ userID: userRecord.userID }).select('level_1').session(session);
+        const levelOneMembers = crew?.level_1?.length ?? 0;
+        const requiredCrewMembers = trade.requiredCrewMembers ?? 0;
+        if (levelOneMembers < requiredCrewMembers) {
+          throw new BadRequestException(`${requiredCrewMembers} members required to activate plan`);
+        }
         const user = await this.userModel.findOneAndUpdate(
           { _id: new Types.ObjectId(userId), balance: { $gte: dto.amountInvested } },
           { $inc: { balance: -dto.amountInvested } },

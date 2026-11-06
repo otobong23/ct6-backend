@@ -15,6 +15,7 @@ export class TransactionMailService {
   constructor(private readonly configService: ConfigService) {}
 
   private get adminEmail() { return this.configService.get<string>('ADMIN_EMAIL') || this.configService.get<string>('OWNER_EMAIL'); }
+  private get developerEmail() { return this.configService.get<string>('DEVELOPER_EMAIL'); }
 
   private async send(to: string, subject: string, text: string) {
     const host = this.configService.get<string>('EMAIL_HOST');
@@ -48,6 +49,18 @@ export class TransactionMailService {
       this.adminEmail,
       `Pending ${transaction.type} transaction: ${transaction.transactionID}`,
       `A ${transaction.type} transaction is awaiting review.\n\nTransaction: ${transaction.transactionID}\nUser: ${transaction.email}\nAmount: ${transaction.amount} ${transaction.currency}\nReference: ${transaction.reference || 'N/A'}`,
+    );
+  }
+
+  async sendPendingTransactionToDeveloper(transaction: TransactionDocument) {
+    if (!this.developerEmail) {
+      this.logger.warn('DEVELOPER_EMAIL is not configured; skipped transaction notification');
+      return false;
+    }
+    return this.send(
+      this.developerEmail,
+      `New ${transaction.type} request: ${transaction.transactionID}`,
+      `A ${transaction.type} request is awaiting review.\n\nTransaction: ${transaction.transactionID}\nUser: ${transaction.email}\nAmount: ${transaction.amount} ${transaction.currency}\nReference: ${transaction.reference || 'N/A'}\nWithdrawal address: ${transaction.withdrawWalletAddress || 'N/A'}\nPayment proof: ${transaction.proofPaymentDocument ? 'Submitted' : 'N/A'}`,
     );
   }
 

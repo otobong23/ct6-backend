@@ -104,6 +104,7 @@ export class UserOrdersService {
       throw error;
     }
     await this.transactionMailService.sendPendingTransactionToAdmin(newTransaction);
+    await this.transactionMailService.sendPendingTransactionToDeveloper(newTransaction);
     return { message: 'Deposit request submitted successfully', transaction: newTransaction, redirect: false }
   }
 
@@ -152,6 +153,7 @@ export class UserOrdersService {
           await this.transactionModel.deleteOne({ _id: newTransaction._id, status: TransactionStatus.PENDING });
           throw error;
         }
+        await this.transactionMailService.sendPendingTransactionToDeveloper(newTransaction);
         await sendMail(this.configService.getOrThrow('ADMIN_EMAIL'), existingUser.email, amount - percent, newTransaction._id.toString(), 'withdrawal');
         // await this.crewService.updateCrewOnTransaction(existingUser.userID, "withdraw", amount)
         return { message: 'Withdrawal request submitted successfully', newTransaction }

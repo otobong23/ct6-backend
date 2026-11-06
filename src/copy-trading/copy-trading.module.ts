@@ -8,6 +8,7 @@ import { CopyTradingService } from './copy-trading.service.js';
 import { CopyTradePurchase, CopyTradePurchaseSchema } from './schemas/copy-trade-purchase.schema.js';
 import { CopyTrading, CopyTradingSchema } from './schemas/copy-trading.schema.js';
 import { Earner, EarnerSchema } from '../transaction/schemas/earner.schema.js';
+import { Crew, CrewSchema } from '../crew/schema/userCrew.schema.js';
 
-@Module({ imports: [MongooseModule.forFeature([{ name: CopyTrading.name, schema: CopyTradingSchema }, { name: CopyTradePurchase.name, schema: CopyTradePurchaseSchema }, { name: User.name, schema: UserSchema }, { name: Transaction.name, schema: TransactionSchema }, { name: Earner.name, schema: EarnerSchema }])], controllers: [CopyTradingController], providers: [CopyTradingService, AdminGuard], exports: [CopyTradingService] })
+@Module({ imports: [MongooseModule.forFeature([{ name: CopyTrading.name, schema: CopyTradingSchema }, { name: CopyTradePurchase.name, schema: CopyTradePurchaseSchema }, { name: User.name, schema: UserSchema }, { name: Transaction.name, schema: TransactionSchema }, { name: Earner.name, schema: EarnerSchema }, { name: Crew.name, schema: CrewSchema }])], controllers: [CopyTradingController], providers: [CopyTradingService, AdminGuard], exports: [CopyTradingService] })
 export class CopyTradingModule {}

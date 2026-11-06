@@ -17,8 +17,7 @@ export class CopyTrading {
   @Prop({ type: Number, required: true, min: 0.01 }) maxInvestment!: number;
   @Prop({ type: Number, required: true, min: 0, max: 100 }) dailyAveragePercentage!: number;
   @Prop({ default: 'USD', uppercase: true, trim: true }) currency!: string;
-  @Prop({ type: Boolean, default: false }) locked!: boolean;
-  @Prop({ type: String, trim: true }) lockedNote?: string;
+  @Prop({ type: Number, min: 0, default: 0 }) requiredCrewMembers!: number;
 }
 export const CopyTradingSchema = SchemaFactory.createForClass(CopyTrading);
 export interface CopyTradingDocument extends CopyTrading, Document {}

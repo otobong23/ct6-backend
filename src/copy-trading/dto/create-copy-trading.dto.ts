@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Matches, Max, Min, MaxLength } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Matches, Max, Min } from 'class-validator';
 
 export enum RiskLevel { LOW = 'low', MEDIUM = 'medium', HIGH = 'high' }
 
@@ -16,6 +16,5 @@ export class CreateCopyTradingDto {
   @Type(() => Number) @IsNumber() @Min(0) totalAssets!: number;
   @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0.01) minInvestment!: number;
   @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0.01) maxInvestment!: number;
-  @IsOptional() @IsBoolean() locked?: boolean;
-  @IsOptional() @IsString() @MaxLength(500) lockedNote?: string;
+  @Type(() => Number) @IsInt() @Min(0) requiredCrewMembers!: number;
 }
