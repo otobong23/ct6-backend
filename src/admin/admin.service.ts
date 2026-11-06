@@ -142,6 +142,8 @@ export class AdminService {
   async updateTransactionStatus(id: string, dto: UpdateTransactionStatusDto) {
     const existing = await this.transactionModel.findById(id);
     if (!existing) throw new NotFoundException('Transaction not found');
+    const existingUser = await this.userModel.findOne({ email: existing.email });
+    if (!existingUser) throw new NotFoundException('Transaction owner not found');
     if ([TransactionType.DEPOSIT, TransactionType.WITHDRAW].includes(existing.type)) {
       if (existing.status !== TransactionStatus.PENDING) throw new BadRequestException('Only pending transactions can be reviewed');
       if (dto.status === TransactionStatus.PENDING) throw new BadRequestException('Choose completed, rejected, or failed');
@@ -155,12 +157,14 @@ export class AdminService {
       const userUpdate: any = {};
       if (transaction.type === TransactionType.DEPOSIT && dto.status === TransactionStatus.COMPLETED) {
         userUpdate.$inc = { balance: transaction.amount, totalDeposit: transaction.amount, transactionCount: 1 } as any;
+        await this.crewService.updateCrewOnTransaction(existingUser.userID, "deposit", transaction.amount)
       } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.REJECTED) {
         userUpdate.$inc = { balance: transaction.amount } as any;
       } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.FAILED) {
         userUpdate.$inc = { balance: transaction.amount } as any;
       } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.COMPLETED) {
         userUpdate.$inc = { totalWithdraw: transaction.amount, transactionCount: 1 } as any;
+        await this.crewService.updateCrewOnTransaction(existingUser.userID, "withdraw", transaction.amount)
       }
       if (transaction.type === TransactionType.WITHDRAW) userUpdate.$set = { withdrawStatus: dto.status };
       if (Object.keys(userUpdate).length) {
