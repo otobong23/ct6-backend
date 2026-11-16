@@ -226,15 +226,11 @@ export class CrewService {
  * @description Generic function to award referral bonuses (alternative approach)
  * @export
  */
-  async awardReferralBonus(userID: string, amount: number, bonusType: 'first_deposit', coin: string = 'USDT') {   //  | 'mining_profit' was removed to focus on deposit bonuses only
-    const user = await this.userModel.findOne({ userID });
+  async awardReferralBonus(userID: string, amount: number) {
+    const user = await this.userModel.findOne({ userID, oneTimeBonus: false });
     if (!user || !user.referredBy) return;
 
-    const bonusPercentages = [0.05, 0.02, 0.01]; // 5%, 3%, 1%
-    // const bonusTypeMap = {
-    //   'first_deposit': 'Deposit',
-    //   'mining_profit': 'Mining'
-    // };
+    const bonusPercentages = [0.05, 0.02, 0.01]; // 5%, 2%, 1%
 
     let currentRefCode: string | undefined = user.referredBy;
     let level = 1;
@@ -255,11 +251,10 @@ export class CrewService {
       const bonusTransaction = new this.transactionModel({
         email: referrer.email,
         userId: referrer._id,
-        type: 'bonus',
+        type: 'SYSTEM',
         amount: bonusAmount,
         status: 'completed',
-        Coin: coin,
-        date: new Date(),
+        reference: (bonusPercentages[level - 1] * 100) + "% was added to user balance from the referred deposit",
       });
       await bonusTransaction.save();
 
@@ -268,6 +263,8 @@ export class CrewService {
       currentRefCode = referrer.referredBy;
       level++;
     }
+    user.oneTimeBonus = true;
+    await user.save();
   }
 
 
