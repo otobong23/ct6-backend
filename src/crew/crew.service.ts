@@ -220,8 +220,6 @@ export class CrewService {
  * @module CrewService
  * @param {string} userID - ID of the user
  * @param {number} amount - Transaction amount
- * @param {'first_deposit' | 'mining_profit'} bonusType - Type of bonus to award
- * @param {string} coin - Coin type (default: 'USDT')
  * @function awardReferralBonus
  * @description Generic function to award referral bonuses (alternative approach)
  * @export
@@ -258,7 +256,7 @@ export class CrewService {
       });
       await bonusTransaction.save();
 
-      console.log(`✅ Awarded ${bonusAmount} ${bonusType} bonus to ${referrer.email} (Level ${level})`);
+      console.log(`✅ Awarded ${bonusAmount} to ${referrer.email} (Level ${level})`);
 
       currentRefCode = referrer.referredBy;
       level++;
