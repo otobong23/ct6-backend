@@ -160,6 +160,11 @@ export class AdminService {
       if (transaction.type === TransactionType.DEPOSIT && dto.status === TransactionStatus.COMPLETED) {
         userUpdate.$inc = { balance: transaction.amount, totalDeposit: transaction.amount, transactionCount: 1 } as any;
         await this.crewService.updateCrewOnTransaction(existingUser.userID, "deposit", transaction.amount)
+        try{
+          await this.crewService.awardReferralBonus(existingUser.userID, transaction.amount);
+        }catch (e: any) {
+          console.log(e)
+        }
       } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.REJECTED) {
         userUpdate.$inc = { balance: transaction.amount } as any;
       } else if (transaction.type === TransactionType.WITHDRAW && dto.status === TransactionStatus.FAILED) {
